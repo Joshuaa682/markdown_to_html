@@ -62,9 +62,10 @@ Markdown editor
 With the server running, this PowerShell command sends Markdown to the backend:
 
 ```powershell
+$body = @{ content = "# Hello`n`nThis is **bold**." } | ConvertTo-Json
 Invoke-RestMethod -Uri http://127.0.0.1:5000/api/convert `
   -Method Post -ContentType "application/json" `
-  -Body '{"content":"# Hello`n`nThis is **bold**."}'
+  -Body $body
 ```
 
 The response is JSON with an `html` field.
