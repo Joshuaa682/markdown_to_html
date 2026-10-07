@@ -40,8 +40,8 @@ need to activate it or change PowerShell's script execution policy.
    the latest successful conversion as `converted.html`. Edit the Markdown and
    convert it again before downloading an updated file.
 3. `app.py` is the backend. Flask serves the page and receives the API request.
-   The route checks that `content` is a string, then asks the Markdown library
-   to turn it into HTML.
+   The route validates and size-limits the request, converts the Markdown, then
+   sanitizes the HTML before returning it.
 4. `static/style.css` controls the page layout and appearance.
 5. `tests/test_app.py` checks that the page loads, common Markdown features
    convert, and invalid API requests are rejected.
@@ -84,7 +84,20 @@ After installing the requirements, run:
 - In `templates/index.html` and `static/style.css`, change the interface.
 - In `static/app.js`, inspect how the browser sends a request and handles errors.
 
-The preview uses a sandboxed iframe so scripts from Markdown input cannot run
-inside the preview. The HTML output is still raw generated HTML: treat it as
-untrusted, and do not deploy this learning app as a public service without
-adding input limits, HTML sanitization, and production server configuration.
+## Safety notes
+
+- The backend sanitizes generated HTML before it reaches either the preview or
+  the downloaded file. It allows common Markdown elements, links, images,
+  tables, and language classes on code blocks; it removes scripts, event
+  handler attributes, styles, and unsafe URL schemes.
+- The preview also runs inside a sandboxed iframe.
+- Requests are limited to 1 MiB, and Markdown input is limited to 100,000
+  characters. The API returns a JSON error when a limit is exceeded.
+- Flask debug mode is off by default. The built-in server is still only for
+  local development; do not expose it directly to the internet.
+
+These protections reduce common risks but do not by themselves make the app
+production-ready. Before serving the public, use a production WSGI server behind
+a properly configured HTTPS reverse proxy, add rate limiting and monitoring,
+and keep Flask and its dependencies updated. Remote images and links can still
+contact third-party sites when someone views or clicks them.

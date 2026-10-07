@@ -12,6 +12,9 @@ class ConverterTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Markdown to HTML", response.data)
+        self.assertEqual(response.headers["X-Content-Type-Options"], "nosniff")
+        self.assertEqual(response.headers["Referrer-Policy"], "no-referrer")
+        self.assertEqual(response.headers["X-Frame-Options"], "DENY")
 
     def test_converts_markdown_with_tables_and_fenced_code(self):
         response = self.client.post(
@@ -38,6 +41,44 @@ class ConverterTests(unittest.TestCase):
 
                 self.assertEqual(response.status_code, 400)
                 self.assertIn("error", response.get_json())
+
+    def test_removes_unsafe_html_and_link_attributes(self):
+        response = self.client.post(
+            "/api/convert",
+            json={
+                "content": (
+                    '<script>alert("bad")</script>\n\n'
+                    '[click](javascript:alert("bad"))\n\n'
+                    '<img src="photo.png" onerror="alert(1)">'
+                )
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        html = response.get_json()["html"]
+        self.assertNotIn("<script", html)
+        self.assertNotIn("javascript:", html)
+        self.assertNotIn("onerror", html)
+        self.assertIn("<img src=\"photo.png\">", html)
+
+    def test_rejects_markdown_over_character_limit(self):
+        response = self.client.post(
+            "/api/convert",
+            json={"content": "a" * 100_001},
+        )
+
+        self.assertEqual(response.status_code, 413)
+        self.assertIn("error", response.get_json())
+
+    def test_rejects_request_over_byte_limit_with_json_error(self):
+        response = self.client.post(
+            "/api/convert",
+            data=b"x" * (1_048_576 + 1),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 413)
+        self.assertEqual(response.get_json(), {"error": "The request is too large."})
 
 
 if __name__ == "__main__":
