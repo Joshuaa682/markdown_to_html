@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Markdown to HTML</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <main class="page">
+      <header class="page-header">
+        <p class="eyebrow">A tiny Python project by Joshua        Set-Location "C:\Users\USER\CrossDevice\Joshua's A05\storage\markdown_to_html"
+        git init -b main
+        git add .gitignore app.py README.md requirements.txt static templates tests
+        git status        Set-Location "C:\Users\USER\CrossDevice\Joshua's A05\storage\markdown_to_html"
+        git init -b main
+        git add .gitignore app.py README.md requirements.txt static templates tests
+        git status        Set-Location "C:\Users\USER\CrossDevice\Joshua's A05\storage\markdown_to_html"
+        git init -b main
+        git add .gitignore app.py README.md requirements.txt static templates tests
+        git status</p>
+        <h1>Markdown to HTML</h1>
+        <p>Write Markdown, then see the generated HTML and a safe preview.</p>
+      </header>
+
+      <section class="workspace" aria-label="Markdown converter">
+        <form id="converter-form" class="panel">
+          <label for="markdown-input">Markdown</label>
+          <textarea id="markdown-input" spellcheck="false">
+# Hello, Markdown!
+
+This is **bold**, and this is a [link](https://example.com).
+
+- Write Markdown on the left
+- Select Convert to see the result
+- My Next Experiment</textarea
+          >
+          <button type="submit">Convert</button>
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+        </form>
+
+        <section class="panel result-panel" aria-label="Conversion result">
+          <h2>Generated HTML</h2>
+          <pre><code id="html-output">Your converted HTML will appear here.</code></pre>
+          <button id="download-button" type="button" disabled>
+            Download HTML
+          </button>
+          <h2>Preview</h2>
+          <iframe
+            id="preview"
+            title="Preview of converted Markdown"
+            sandbox=""
+          ></iframe>
+        </section>
+      </section>
+
+      <footer>
+        <p>
+          This local learning app is not intended to be exposed as a public
+          service.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>
